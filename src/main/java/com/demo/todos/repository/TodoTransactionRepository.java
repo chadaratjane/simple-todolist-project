@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 @Repository
 public interface TodoTransactionRepository extends JpaRepository<TodoTransactionEntity, UUID> {
+
+    TodoTransactionEntity findAllByIdAndActivated(UUID id, String activated);
 }

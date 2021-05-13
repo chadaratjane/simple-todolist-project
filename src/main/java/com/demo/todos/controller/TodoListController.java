@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class TodoListController {
@@ -22,4 +20,11 @@ public class TodoListController {
        CommonResponse response = todoListService.insertTodoList(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+    @PutMapping (value ="/{messageId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> updateTodoList (@PathVariable("messageId") String messageId, @RequestBody TodoListInsertRequest request){
+        CommonResponse response = todoListService.updateTodoList(request, messageId);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
+
 }
