@@ -31,7 +31,7 @@ public class TodoListController {
     public ResponseEntity<CommonResponse> updateTodoList (@PathVariable("messageId") String messageId, @RequestBody TodoListInsertRequest request){
         logger.info("START IMPLEMENTING UPDATE TODOLIST, message : {}", request.getMessage());
         CommonResponse response = todoListService.updateTodoList(request, messageId);
-        logger.info("END IMPLEMENTING INSERT TODOLIST, response : {}", response);
+        logger.info("END IMPLEMENTING UPDATE TODOLIST, response : {}", response);
         return new ResponseEntity<>(response,response.getHttpStatus());
     }
 
@@ -42,4 +42,13 @@ public class TodoListController {
         logger.info("END IMPLEMENTING RETRIEVE TODOLIST, response : {}",response);
         return new ResponseEntity<>(response,response.getHttpStatus());
     }
+
+    @DeleteMapping (value ="/{messageId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse> removeTodoList (@PathVariable("messageId") String messageId){
+        logger.info("START IMPLEMENTING REMOVE TODOLIST");
+        CommonResponse response = todoListService.removeTodoList(messageId);
+        logger.info("END IMPLEMENTING REMOVE TODOLIST, response : {}", response);
+        return new ResponseEntity<>(response,response.getHttpStatus());
+    }
+
 }
