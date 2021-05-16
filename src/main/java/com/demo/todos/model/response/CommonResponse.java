@@ -1,8 +1,23 @@
 package com.demo.todos.model.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.http.HttpStatus;
+
 public class CommonResponse {
     private String status;
     private Object data;
+    @JsonIgnore
+    private HttpStatus httpStatus;
+
+
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
+
+    public void setHttpStatus(HttpStatus httpStatus) {
+        this.httpStatus = httpStatus;
+    }
+
 
     public String getStatus() {
         return status;

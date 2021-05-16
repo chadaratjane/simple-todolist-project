@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface TodoTransactionRepository extends JpaRepository<TodoTransactionEntity, UUID> {
 
     TodoTransactionEntity findAllByIdAndActivated(UUID id, String activated);
+    TodoTransactionEntity findAllByActivated(String activated);
 }
