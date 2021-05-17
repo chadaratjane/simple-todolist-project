@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 public class TodoListController {
 
@@ -20,7 +22,7 @@ public class TodoListController {
     private TodoListService todoListService;
 
     @PostMapping(value = "",produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse> insertTodoList(@RequestBody TodoListInsertRequest request){
+    public ResponseEntity<CommonResponse> insertTodoList(@Valid @RequestBody TodoListInsertRequest request){
         logger.info("START IMPLEMENTING INSERT TODOLIST, message : {}", request.getMessage());
        CommonResponse  response = todoListService.insertTodoList(request);
         logger.info("END IMPLEMENTING INSERT TODOLIST, response : {}", response);
@@ -28,7 +30,7 @@ public class TodoListController {
     }
 
     @PutMapping (value ="/{messageId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse> updateTodoList (@PathVariable("messageId") String messageId, @RequestBody TodoListInsertRequest request){
+    public ResponseEntity<CommonResponse> updateTodoList (@Valid @PathVariable("messageId") String messageId, @RequestBody TodoListInsertRequest request){
         logger.info("START IMPLEMENTING UPDATE TODOLIST, message : {}", request.getMessage());
         CommonResponse response = todoListService.updateTodoList(request, messageId);
         logger.info("END IMPLEMENTING UPDATE TODOLIST, response : {}", response);
