@@ -45,8 +45,8 @@ public class TodoListService {
             logger.info("INSERT SUCCESSFULLY");
             response.setStatus(SUCCESS_CODE);
             TodoListInsertResponse todoListInsertResponse = new TodoListInsertResponse();
-            todoListInsertResponse.setMessage(request.getMessage());
-            todoListInsertResponse.setMessageId(id.toString());
+            todoListInsertResponse.setMessage(saveResult.getMessage());
+            todoListInsertResponse.setMessageId(saveResult.getId().toString());
             response.setData(todoListInsertResponse);
             response.setHttpStatus(HttpStatus.CREATED);
         } else {
@@ -82,8 +82,8 @@ public class TodoListService {
                 logger.info("UPDATE SUCCESSFULLY");
                 response.setStatus(SUCCESS_CODE);
                 TodoListInsertResponse todoListInsertResponse = new TodoListInsertResponse();
-                todoListInsertResponse.setMessage(request.getMessage());
-                todoListInsertResponse.setMessageId(messageIdStr);
+                todoListInsertResponse.setMessage(saveResult.getMessage());
+                todoListInsertResponse.setMessageId(saveResult.getId().toString());
                 response.setData(todoListInsertResponse);
                 response.setHttpStatus(HttpStatus.OK);
             }else {
@@ -151,7 +151,7 @@ public class TodoListService {
                 response.setStatus(SUCCESS_CODE);
                 TodoListInsertResponse todoListInsertResponse = new TodoListInsertResponse();
                 todoListInsertResponse.setMessage(saveResult.getMessage());
-                todoListInsertResponse.setMessageId(messageIdStr);
+                todoListInsertResponse.setMessageId(saveResult.getId().toString());
                 response.setData(todoListInsertResponse);
                 response.setHttpStatus(HttpStatus.OK);
             }else {
