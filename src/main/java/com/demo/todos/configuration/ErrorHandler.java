@@ -18,7 +18,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponse> handlerAllError(Exception e){
-        logger.error("UNEXPECTED ERROR, {}" ,e);
+        logger.error("UNEXPECTED ERROR",e);
         CommonResponse commonResponse = new CommonResponse();
         commonResponse.setStatus("INTERNAL SERVER ERROR");
         ErrorResponse errorResponse = new ErrorResponse();
@@ -30,7 +30,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CommonResponse> handlerValidate(MethodArgumentNotValidException e){
-        logger.error("VALIDATION FAILED, {}" ,e);
+        logger.error("VALIDATION FAILED",e);
         CommonResponse commonResponse = new CommonResponse();
         commonResponse.setStatus("BAD REQUEST");
         ErrorResponse errorResponse = new ErrorResponse();
