@@ -19,4 +19,12 @@ public class TodoListInsertResponse {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Override
+    public String toString() {
+        return "TodoListInsertResponse{" +
+                "messageId='" + messageId + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

@@ -34,4 +34,14 @@ public class CommonResponse {
     public void setData(Object data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "CommonResponse{" +
+                "status='" + status + '\'' +
+                ", data=" + data +
+                ", httpStatus=" + httpStatus.getReasonPhrase() +
+                '}';
+    }
+
 }
