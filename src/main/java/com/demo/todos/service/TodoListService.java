@@ -1,6 +1,5 @@
 package com.demo.todos.service;
 
-import com.demo.todos.controller.TodoListController;
 import com.demo.todos.model.entity.TodoTransactionEntity;
 import com.demo.todos.model.request.TodoListInsertRequest;
 import com.demo.todos.model.response.CommonResponse;
@@ -13,10 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-import java.util.*;
-
-import static com.demo.todos.constant.CommonConstant.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import static com.demo.todos.constant.CommonConstant.ACTIVATED_MESSAGE;
+import static com.demo.todos.constant.CommonConstant.INACTIVATED_MESSAGE;
+import static com.demo.todos.constant.CommonConstant.SUCCESS_CODE;
 
 @Service
 public class TodoListService {
@@ -61,48 +64,55 @@ public class TodoListService {
     }
 
     public CommonResponse updateTodoList(TodoListInsertRequest request, String messageIdStr) {
-        UUID messageId = UUID.fromString(messageIdStr);
-        TodoTransactionEntity todoTransactionEntity = todoTransactionRepository.findAllByIdAndActivated(messageId, ACTIVATED_MESSAGE);
+        boolean checkUUID = isUUID(messageIdStr);
         CommonResponse response = new CommonResponse();
-
-        if (todoTransactionEntity!= null){
-            logger.info("TRANSACTION FOUND");
-
-            TodoTransactionEntity entity = new TodoTransactionEntity();
-            entity.setId(todoTransactionEntity.getId());
-            entity.setMessage(request.getMessage());
-            entity.setCreatedDate(todoTransactionEntity.getCreatedDate());
-            entity.setUpdatedDate(Calendar.getInstance().getTime());
-            entity.setActivated(todoTransactionEntity.getActivated());
-            TodoTransactionEntity saveResult = todoTransactionRepository.save(entity);
-
-            if(saveResult!= null) {
-
-
-                logger.info("UPDATE SUCCESSFULLY");
-                response.setStatus(SUCCESS_CODE);
-                TodoListInsertResponse todoListInsertResponse = new TodoListInsertResponse();
-                todoListInsertResponse.setMessage(saveResult.getMessage());
-                todoListInsertResponse.setMessageId(saveResult.getId().toString());
-                response.setData(todoListInsertResponse);
-                response.setHttpStatus(HttpStatus.OK);
-            }else {
-                logger.info("UPDATE UNSUCCESSFULLY");
-                response.setStatus("ERROR");
-                ErrorResponse errorResponse = new ErrorResponse();
-                errorResponse.setError("UPDATE UNSUCCESSFULLY");
-                response.setData(errorResponse);
-                response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-
-            }
-
-        }else{
-            logger.error("TRANSACTION NOT FOUND messageId :{}" ,messageIdStr);
-            response.setStatus("NOT FOUND");
+        if (checkUUID == false) {
+            logger.error("VALIDATION FAILED", messageIdStr);
+            response.setStatus("BAD REQUEST");
             ErrorResponse errorResponse = new ErrorResponse();
-            errorResponse.setError("TRANSACTION NOT FOUND");
+            errorResponse.setError("VALIDATION FAILED");
             response.setData(errorResponse);
-            response.setHttpStatus(HttpStatus.NOT_FOUND);
+            response.setHttpStatus(HttpStatus.BAD_REQUEST);
+        } else {
+
+            UUID messageId = UUID.fromString(messageIdStr);
+            TodoTransactionEntity todoTransactionEntity = todoTransactionRepository.findAllByIdAndActivated(messageId, ACTIVATED_MESSAGE);
+
+            if (todoTransactionEntity != null) {
+                logger.info("TRANSACTION FOUND");
+                TodoTransactionEntity entity = new TodoTransactionEntity();
+                entity.setId(todoTransactionEntity.getId());
+                entity.setMessage(request.getMessage());
+                entity.setCreatedDate(todoTransactionEntity.getCreatedDate());
+                entity.setUpdatedDate(Calendar.getInstance().getTime());
+                entity.setActivated(todoTransactionEntity.getActivated());
+                TodoTransactionEntity saveResult = todoTransactionRepository.save(entity);
+
+                if (saveResult != null) {
+                    logger.info("UPDATE SUCCESSFULLY");
+                    response.setStatus(SUCCESS_CODE);
+                    TodoListInsertResponse todoListInsertResponse = new TodoListInsertResponse();
+                    todoListInsertResponse.setMessage(saveResult.getMessage());
+                    todoListInsertResponse.setMessageId(saveResult.getId().toString());
+                    response.setData(todoListInsertResponse);
+                    response.setHttpStatus(HttpStatus.OK);
+                } else {
+                    logger.info("UPDATE UNSUCCESSFULLY");
+                    response.setStatus("ERROR");
+                    ErrorResponse errorResponse = new ErrorResponse();
+                    errorResponse.setError("UPDATE UNSUCCESSFULLY");
+                    response.setData(errorResponse);
+                    response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+            } else {
+                logger.error("TRANSACTION NOT FOUND messageId :{}", messageIdStr);
+                response.setStatus("NOT FOUND");
+                ErrorResponse errorResponse = new ErrorResponse();
+                errorResponse.setError("TRANSACTION NOT FOUND");
+                response.setData(errorResponse);
+                response.setHttpStatus(HttpStatus.NOT_FOUND);
+            }
         }
         return response;
     }
@@ -128,51 +138,70 @@ public class TodoListService {
         return response;
     }
 
-    public CommonResponse removeTodoList(String messageIdStr){
-        UUID messageId = UUID.fromString(messageIdStr);
-        TodoTransactionEntity todoTransactionEntity = todoTransactionRepository.findAllByIdAndActivated(messageId, ACTIVATED_MESSAGE);
+    public CommonResponse removeTodoList(String messageIdStr) {
+        boolean checkUUID = isUUID(messageIdStr);
         CommonResponse response = new CommonResponse();
-
-        if (todoTransactionEntity!= null){
-            logger.info("TRANSACTION FOUND");
-
-            TodoTransactionEntity entity = new TodoTransactionEntity();
-            entity.setId(todoTransactionEntity.getId());
-            entity.setMessage(todoTransactionEntity.getMessage());
-            entity.setCreatedDate(todoTransactionEntity.getCreatedDate());
-            entity.setUpdatedDate(Calendar.getInstance().getTime());
-            entity.setActivated(INACTIVATED_MESSAGE);
-            TodoTransactionEntity saveResult = todoTransactionRepository.save(entity);
-
-            if(saveResult!= null) {
-
-
-                logger.info("REMOVE SUCCESSFULLY");
-                response.setStatus(SUCCESS_CODE);
-                TodoListInsertResponse todoListInsertResponse = new TodoListInsertResponse();
-                todoListInsertResponse.setMessage(saveResult.getMessage());
-                todoListInsertResponse.setMessageId(saveResult.getId().toString());
-                response.setData(todoListInsertResponse);
-                response.setHttpStatus(HttpStatus.OK);
-            }else {
-                logger.info("REMOVE UNSUCCESSFULLY");
-                response.setStatus("ERROR");
-                ErrorResponse errorResponse = new ErrorResponse();
-                errorResponse.setError("REMOVE UNSUCCESSFULLY");
-                response.setData(errorResponse);
-                response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-
-            }
-
-        } else {
-            logger.error("TRANSACTION NOT FOUND messageId :{}", messageIdStr);
-            response.setStatus("NOT FOUND");
+        if (checkUUID == false) {
+            logger.error("VALIDATION FAILED", messageIdStr);
+            response.setStatus("BAD REQUEST");
             ErrorResponse errorResponse = new ErrorResponse();
-            errorResponse.setError("TRANSACTION NOT FOUND");
+            errorResponse.setError("VALIDATION FAILED");
             response.setData(errorResponse);
-            response.setHttpStatus(HttpStatus.NOT_FOUND);
+            response.setHttpStatus(HttpStatus.BAD_REQUEST);
+        } else {
+            UUID messageId = UUID.fromString(messageIdStr);
+            TodoTransactionEntity todoTransactionEntity = todoTransactionRepository.findAllByIdAndActivated(messageId, ACTIVATED_MESSAGE);
+
+            if (todoTransactionEntity != null) {
+                logger.info("TRANSACTION FOUND");
+
+                TodoTransactionEntity entity = new TodoTransactionEntity();
+                entity.setId(todoTransactionEntity.getId());
+                entity.setMessage(todoTransactionEntity.getMessage());
+                entity.setCreatedDate(todoTransactionEntity.getCreatedDate());
+                entity.setUpdatedDate(Calendar.getInstance().getTime());
+                entity.setActivated(INACTIVATED_MESSAGE);
+                TodoTransactionEntity saveResult = todoTransactionRepository.save(entity);
+
+                if (saveResult != null) {
+
+
+                    logger.info("REMOVE SUCCESSFULLY");
+                    response.setStatus(SUCCESS_CODE);
+                    TodoListInsertResponse todoListInsertResponse = new TodoListInsertResponse();
+                    todoListInsertResponse.setMessage(saveResult.getMessage());
+                    todoListInsertResponse.setMessageId(saveResult.getId().toString());
+                    response.setData(todoListInsertResponse);
+                    response.setHttpStatus(HttpStatus.OK);
+                } else {
+                    logger.info("REMOVE UNSUCCESSFULLY");
+                    response.setStatus("ERROR");
+                    ErrorResponse errorResponse = new ErrorResponse();
+                    errorResponse.setError("REMOVE UNSUCCESSFULLY");
+                    response.setData(errorResponse);
+                    response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+
+                }
+
+            } else {
+                logger.error("TRANSACTION NOT FOUND messageId :{}", messageIdStr);
+                response.setStatus("NOT FOUND");
+                ErrorResponse errorResponse = new ErrorResponse();
+                errorResponse.setError("TRANSACTION NOT FOUND");
+                response.setData(errorResponse);
+                response.setHttpStatus(HttpStatus.NOT_FOUND);
+            }
         }
         return response;
+    }
+
+    private boolean isUUID (String messageIdStr){
+        try {
+            UUID.fromString(messageIdStr);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
 }
